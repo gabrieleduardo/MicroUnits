@@ -86,8 +86,8 @@ public class MyPdfDocument {
 
         for (String st : nomeArquivos) {
             if (st.endsWith(".xml")) {
-                stList.add(Key.analisarPausas(path + "\\" + st, pausas));
-                System.out.println("Analisando: " + path + "\\" + st);
+                stList.add(Key.analisarPausas(path + "/" + st, pausas));
+                System.out.println("Analisando: " + path + "/" + st);
             }
         }
 
