@@ -86,8 +86,8 @@ public class MyPdfDocument {
 
         for (String st : nomeArquivos) {
             if (st.endsWith(".xml")) {
-                stList.add(Key.analisarPausas(path + "/" + st, pausas));
-                System.out.println("Analisando: " + path + "/" + st);
+                stList.add(Key.analisarPausas(path + getSlash() + st, pausas));
+                System.out.println("Analisando: " + path + getSlash() + st);
             }
         }
 
@@ -233,5 +233,18 @@ public class MyPdfDocument {
         }
 
         return null;
+    }
+    
+    /*
+        Verifica a versão do Sistema, para retornar a barra correta para o
+        caminho de um arquivo.
+    */
+    
+    private static String getSlash(){
+        if(System.getProperty("os.name").startsWith("Windows")){
+            return "\\";
+        }
+        
+        return "/";
     }
 }
