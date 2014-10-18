@@ -1,4 +1,0 @@
-Por questões de licença, a fonte utilizada náo pode ser disponíbilizada. Adicione a fonte 
-MSMHei - Microsoft MHei do pacote de Linguagem Chinesa do Windows ou a fonte de sua preferência
-nessa pasta. Caso seja uma fonte diferente, lembre-se de modificar no código fonte da classe
-MyPdfDocumento, campo fontPath.
