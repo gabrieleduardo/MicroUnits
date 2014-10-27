@@ -34,7 +34,7 @@ import javafx.stage.Stage;
 public class MicroUnitsApp extends Application {
     
     /**
-     * Variável estática para poder ser utilizada pelo Controller.
+     * For Controller use.
      */
     public static Stage stage;
 

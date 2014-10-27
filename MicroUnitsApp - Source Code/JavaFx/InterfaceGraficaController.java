@@ -18,7 +18,7 @@
  */
 package JavaFx;
 
-import Modelo.MyPdfDocument;
+import Model.MyPdfDocument;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -42,7 +42,7 @@ import org.controlsfx.dialog.Dialog;
 public class InterfaceGraficaController implements Initializable {
 
     @FXML
-    private TextField pausas;
+    private TextField pause;
     @FXML
     private TextField arq;
     @FXML
@@ -50,10 +50,11 @@ public class InterfaceGraficaController implements Initializable {
     @FXML
     private ChoiceBox<String> choice;
 
+
     @FXML
     private void dChooser(ActionEvent event) {
         DirectoryChooser dc = new DirectoryChooser();
-        dc.setTitle("Escolha o diretório a ser processado");
+        dc.setTitle("Choose directory");
         File file = dc.showDialog(new Stage());
         dir.setText(file.toString());
         arq.setText(file.toString() + getSlash());
@@ -64,10 +65,11 @@ public class InterfaceGraficaController implements Initializable {
         if (dir.getText().length() > 1) {
 
             try {
-                MyPdfDocument.create(dir.getText(), validaNomeArquivo(arq.getText()), validaPausa(pausas.getText()), validaTipo(choice.getValue()));
+                MyPdfDocument.create(dir.getText(), filenameValidator(arq.getText()), pauseValidator(pause.getText()),
+                       typeValidator(choice.getValue()));
             } catch (Exception ex) {
                 Dialog dialog;
-                dialog = new Dialog(MicroUnitsApp.stage, "Erro", true);
+                dialog = new Dialog(MicroUnitsApp.stage, "Error", true);
                 dialog.setContent(ex.getMessage());
                 dialog.show();
                 Logger.getLogger(InterfaceGraficaController.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,17 +77,17 @@ public class InterfaceGraficaController implements Initializable {
 
         }
 
-        System.out.println("Operação Finalizada");
+        System.out.println("Job Done");
         limparCampos();
     }
 
     private void limparCampos() {
         dir.setText("");
-        pausas.setText("");
+        pause.setText("");
         arq.setText("");
     }
 
-    private Integer validaPausa(String st) {
+    private Integer pauseValidator(String st) {
         if (st.matches("[0-9]*")) {
             return Integer.parseInt(st);
         } else {
@@ -93,15 +95,19 @@ public class InterfaceGraficaController implements Initializable {
         }
     }
 
-    private Integer validaTipo(String st) {
-        if (st.equalsIgnoreCase("Fix")) {
-            return 2;
-        } else {
+    private Integer typeValidator(String st) {
+        if (st.equalsIgnoreCase("Both")) {
+            return 0;
+        }else if(st.equalsIgnoreCase("Basic")) {
             return 1;
+        }else if(st.equalsIgnoreCase("Fix")){
+            return 2;
+        }else{
+            return 0;
         }
     }
 
-    private String validaNomeArquivo(String st) {
+    private String filenameValidator(String st) {
         if (st == null) {
             return "MicroUnits.pdf";
         } else if (st.isEmpty()) {
@@ -118,8 +124,7 @@ public class InterfaceGraficaController implements Initializable {
     }
 
     /*
-     Verifica a versão do Sistema, para retornar a barra correta para o
-     caminho de um arquivo.
+     * Gets the proper slash to the operating system
      */
     private String getSlash() {
         if (System.getProperty("os.name").startsWith("Windows")) {
@@ -131,7 +136,7 @@ public class InterfaceGraficaController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        choice.setItems(FXCollections.observableArrayList("Basico","Fix"));
+        choice.setItems(FXCollections.observableArrayList("Both","Basic","Fix"));
     }
 
 }
