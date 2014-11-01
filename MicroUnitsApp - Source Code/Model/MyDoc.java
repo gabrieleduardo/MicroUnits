@@ -94,7 +94,7 @@ public class MyDoc {
         TF = getKeys().get(0).getTime(); // First Key Time
 
         //fixation before the first Key
-        stringList.add("\nfixation before the first Key: \n");
+        stringList.add("\nFixation before the first Key: \n");
         stringList.add(stfixation(TF));
         stringList.add("\n\n");
         TI = TF;
