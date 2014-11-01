@@ -52,10 +52,10 @@ public class MyDoc {
     /**
      * Add a fix field
      *
-     * @param i - Fix time
+     * @param i - fixation time
      */
-    public void addFix(Integer i) {
-        getFix().add(i);
+    public void addfixation(Integer i) {
+        getfixation().add(i);
     }
 
     /**
@@ -68,15 +68,15 @@ public class MyDoc {
     }
 
     /**
-     * Fix Pause Analysis 
+     * fixation Pause Analysis 
      *
      * @param pause - Time between pauses
      * @return ArrayList with the fix values
      * @throws java.lang.Exception - Exception
      */
-    public ArrayList<String> pauseFixAnalysis(Integer pause) throws Exception {
+    public ArrayList<String> pausefixationAnalysis(Integer pause) throws Exception {
 
-        if (getKeys() == null || getFinalTime() == null || getFix() == null) {
+        if (getKeys() == null || getFinalTime() == null || getfixation() == null) {
             return null;
         }
 
@@ -93,9 +93,9 @@ public class MyDoc {
         stringList.add(getPath());
         TF = getKeys().get(0).getTime(); // First Key Time
 
-        //Fix before the first Key
-        stringList.add("\nFix before the first Key: \n");
-        stringList.add(stFix(TF));
+        //fixation before the first Key
+        stringList.add("\nfixation before the first Key: \n");
+        stringList.add(stfixation(TF));
         stringList.add("\n\n");
         TI = TF;
 
@@ -113,7 +113,7 @@ public class MyDoc {
             // Count the number of chars typed in the segment
             chars += charactersCount(getKeys().get(i).getValue());
 
-            if (dif > pause) {
+            if (dif >= pause) {
                 TF = getKeys().get(i + 1).getTime();
                 pausesVector.add(dif);
                 charactersVector.add(chars);
@@ -121,7 +121,7 @@ public class MyDoc {
                 stringList.add(getKeys().get(i).getValue());
                 stringList.add("(" + TF + ")");
                 stringList.add("\n");
-                stringList.add(stFix(TF));
+                stringList.add(stfixation(TF));
                 stringList.add("\n\n");
                 TI = TF;
                 aux = true;
@@ -142,17 +142,17 @@ public class MyDoc {
         pausesVector.add(dif);
         charactersVector.add(chars);
 
-        if (dif > pause) {
+        if (dif >= pause) {
             stringList.add("(" + TI + ")");
             stringList.add(getKeys().get(i).getValue());
             stringList.add("(" + TF + ")");
             stringList.add("\n");
-            stringList.add(stFix(TF));
+            stringList.add(stfixation(TF));
             stringList.add("\n\n");
 
         } else {
             stringList.add(getKeys().get(i).getValue());
-            stringList.add("(" + TF + ")" + "\n" + stFix(TF));
+            stringList.add("(" + TF + ")" + "\n" + stfixation(TF));
         }
 
         stringList.add("\n\n###Statistics###\n");
@@ -193,7 +193,7 @@ public class MyDoc {
             // Count the number of chars typed in the segment
             chars += charactersCount(getKeys().get(i).getValue());
 
-            if (dif > pause) {
+            if (dif >= pause) {
                 pausesVector.add(dif);
                 charactersVector.add(chars);
                 chars = 0;
@@ -212,7 +212,7 @@ public class MyDoc {
         chars += charactersCount(getKeys().get(i).getValue());
         pausesVector.add(dif);
 
-        if (dif > pause) {
+        if (dif >= pause) {
             stringList.add(getKeys().get(i).getValue());
             stringList.add("(" + dif + ")");
         } else {
@@ -227,24 +227,29 @@ public class MyDoc {
     }
 
     /*
-     * Fix checks during the last segment break.
+     * fixation checks during the last segment break.
      */
-    private String stFix(Integer TF) {
-        if (getIfix() >= getFix().size()) {
+    private String stfixation(Integer TF) {
+        if (getIfix() >= getfixation().size()) {
             return "";
         }
         Integer ac = 0;
         Integer sum = 0;
-        Integer decrement = getFix().get(getIfix());
+        Integer decrement = getfixation().get(getIfix());
 
-        while (getIfix() < getFix().size() && getFix().get(getIfix()) <= TF) {
+        while (getIfix() < getfixation().size() && getfixation().get(getIfix()) <= TF) {
             ac++;
-            sum += getFix().get(getIfix()) - decrement;
-            decrement = getFix().get(getIfix());
+            sum += getfixation().get(getIfix()) - decrement;
+            decrement = getfixation().get(getIfix());
             setIfix((Integer) (getIfix() + 1));
         }
+        
+        if(ac > 0){
+            return "Fixation Number: " + ac + " // Average Fixation Duration: " + (sum / ac) + " ms // Fixation Duration: " + sum;
+        }else{
+            return "There was no any fixation in this segment";
+        }
 
-        return "Fix: " + ac + " // Average: " + (sum / ac) + " ms // Fix time: " + sum;
     }
 
     /*
@@ -272,10 +277,10 @@ public class MyDoc {
         Double max = statistic.max(v);
         Double min = statistic.min(v);
 
-        String returnValue = "\nAvarage of characters between pauses longer than " + pause + ": " + format2f(average) + "\n"
-                + "Standard deviation of characters between pauses longer than " + pause + ": " + format2f(standardDeviation) + "\n"
-                + "Min Standard deviation of characters between pauses longer than " + pause + ": " + format2f(min) + "\n"
-                + "Max Standard deviation of characters between pauses longer than " + pause + ": " + format2f(max) + "\n";
+        String returnValue = "\nAverage of characters between pauses longer than or equal to " + pause + ": " + format2f(average) + "\n"
+                + "Standard deviation of characters between pauses longer than or equal to " + pause + ": " + format2f(standardDeviation) + "\n"
+                + "Min Standard deviation of characters between pauses longer than or equal to " + pause + ": " + format2f(min) + "\n"
+                + "Max Standard deviation of characters between pauses longer than or equal to " + pause + ": " + format2f(max) + "\n";
 
         return returnValue;
 
@@ -292,11 +297,11 @@ public class MyDoc {
         Double max = statistic.max(v);
         Double min = statistic.min(v);
 
-        String returnValue = "Full job time: " + finalTime + " \n" + ""
-                + "Average of pauses longer than " + pause + ": " + format2f(average) + "\n"
-                + "Standard Deviation of pauses longer than " + pause + ": " + format2f(standardDeviation) + "\n"
-                + "Min value of pauses longer than " + pause + ": " + format2f(min) + "\n"
-                + "Max value of pauses longer than " + pause + ": " + format2f(max) + "\n";
+        String returnValue = "Task duration: " + finalTime + " \n" + ""
+                + "Average of pauses longer than or equal to " + pause + ": " + format2f(average) + "\n"
+                + "Standard Deviation of pauses longer than or equal to " + pause + ": " + format2f(standardDeviation) + "\n"
+                + "Min value of pauses longer than or equal to " + pause + ": " + format2f(min) + "\n"
+                + "Max value of pauses longer than or equal to " + pause + ": " + format2f(max) + "\n";
 
         return returnValue;
 
@@ -323,14 +328,14 @@ public class MyDoc {
     /**
      * @return the fix
      */
-    public ArrayList<Integer> getFix() {
+    public ArrayList<Integer> getfixation() {
         return fix;
     }
 
     /**
      * @param fix the fix to set
      */
-    public void setFix(ArrayList<Integer> fix) {
+    public void setfixation(ArrayList<Integer> fix) {
         this.fix = fix;
     }
 

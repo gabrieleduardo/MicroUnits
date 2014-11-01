@@ -48,7 +48,7 @@ public class MyPdfDocument {
      * @param path - Directory to Parse
      * @param file - PDF File name
      * @param pause - Time between pauses
-     * @param type - 0 - Both, 1 - Basic, 2 - Fix
+     * @param type - 0 - Both, 1 - Basic, 2 - fixation
      * @throws java.lang.Exception - Exception
      */
     public static void create(String path, String file, Integer pause, Integer type) throws Exception {
@@ -64,13 +64,13 @@ public class MyPdfDocument {
             switch (type) {
                 case both:
                     createBasic(filename, path, file, pause);
-                    createFix(filename, path, file, pause);
+                    createfixation(filename, path, file, pause);
                     break;
                 case basic:
                     createBasic(filename, path, file, pause);
                     break;
                 case fix:
-                    createFix(filename, path, file, pause);
+                    createfixation(filename, path, file, pause);
                     break;
                 default:
                     throw new Exception("Invalid type");
@@ -108,9 +108,9 @@ public class MyPdfDocument {
     }
 
     /**
-     * Create a pdf file with "Fix" parsing
+     * Create a pdf file with "fixation" parsing
      */
-    private static void createFix(String[] filename, String path, String file, Integer pause) throws Exception {
+    private static void createfixation(String[] filename, String path, String file, Integer pause) throws Exception {
 
         ArrayList<ArrayList<String>> stList = new ArrayList<>();
         String docName;
@@ -127,7 +127,7 @@ public class MyPdfDocument {
                 // Clears the list to always have the title in first position
                 stList.clear();
 
-                stList.add(myDoc.pauseFixAnalysis(pause));
+                stList.add(myDoc.pausefixationAnalysis(pause));
 
                 /*
                  * Removes the file extensions and Concatenates the pdf title 

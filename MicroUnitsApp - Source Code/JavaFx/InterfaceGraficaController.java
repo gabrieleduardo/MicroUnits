@@ -32,6 +32,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.controlsfx.dialog.Dialog;
 
@@ -50,14 +51,27 @@ public class InterfaceGraficaController implements Initializable {
     @FXML
     private ChoiceBox<String> choice;
 
-
     @FXML
     private void dChooser(ActionEvent event) {
         DirectoryChooser dc = new DirectoryChooser();
-        dc.setTitle("Choose directory");
+        dc.setTitle("Open resource directory");
         File file = dc.showDialog(new Stage());
         dir.setText(file.toString());
-        arq.setText(file.toString() + getSlash());
+    }
+
+    @FXML
+    private void fChooser(ActionEvent event) {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save as");
+        fc.setSelectedExtensionFilter(null);
+        fc.setInitialDirectory(
+                new File(System.getProperty("user.home"))
+        );
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PDF", "*.pdf")
+        );
+        File file = fc.showSaveDialog(new Stage());
+        arq.setText(file.toString());
     }
 
     @FXML
@@ -66,7 +80,7 @@ public class InterfaceGraficaController implements Initializable {
 
             try {
                 MyPdfDocument.create(dir.getText(), filenameValidator(arq.getText()), pauseValidator(pause.getText()),
-                       typeValidator(choice.getValue()));
+                        typeValidator(choice.getValue()));
             } catch (Exception ex) {
                 Dialog dialog;
                 dialog = new Dialog(MicroUnitsApp.stage, "Error", true);
@@ -98,30 +112,26 @@ public class InterfaceGraficaController implements Initializable {
     private Integer typeValidator(String st) {
         if (st.equalsIgnoreCase("Both")) {
             return 0;
-        }else if(st.equalsIgnoreCase("Basic")) {
+        } else if (st.equalsIgnoreCase("Basic")) {
             return 1;
-        }else if(st.equalsIgnoreCase("Fix")){
+        } else if (st.equalsIgnoreCase("Fix")) {
             return 2;
-        }else{
+        } else {
             return 0;
         }
     }
+
 
     private String filenameValidator(String st) {
         if (st == null) {
             return "MicroUnits.pdf";
         } else if (st.isEmpty()) {
             return "MicroUnits.pdf";
-        } else if (st.endsWith(".pdf")) {
+        } else{
             return st;
-        } else if (st.contains(".")) {
-            String[] stList = st.split(".");
-            return stList[0] + ".pdf";
-        } else {
-            return st + ".pdf";
         }
-
     }
+    
 
     /*
      * Gets the proper slash to the operating system
@@ -136,7 +146,7 @@ public class InterfaceGraficaController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        choice.setItems(FXCollections.observableArrayList("Both","Basic","Fix"));
+        choice.setItems(FXCollections.observableArrayList("Both", "Basic", "Fix"));
     }
 
 }

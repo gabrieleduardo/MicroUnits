@@ -16,16 +16,17 @@
                   <Font name="Times New Roman" size="52.0" />
                </font>
             </Label>
-            <TextField fx:id="dir" layoutX="186.0" layoutY="140.0" prefHeight="25.0" prefWidth="298.0" />
+            <TextField fx:id="dir" editable="false" layoutX="186.0" layoutY="140.0" prefHeight="25.0" prefWidth="298.0" />
             <Label layoutX="121.0" layoutY="140.0" prefHeight="25.0" prefWidth="58.0" text="Directory:" />
             <Label layoutX="121.0" layoutY="196.0" prefHeight="25.0" prefWidth="58.0" text="File Path:" />
-            <TextField fx:id="arq" layoutX="186.0" layoutY="196.0" prefHeight="25.0" prefWidth="298.0" />
+            <TextField fx:id="arq" editable="false" layoutX="186.0" layoutY="196.0" prefHeight="25.0" prefWidth="298.0" />
             <Button id="dChooserButton" fx:id="dChooserButton" layoutX="510.0" layoutY="140.0" mnemonicParsing="false" onAction="#dChooser" prefHeight="25.0" prefWidth="76.0" text="..." />
             <Button id="processarButton" fx:id="processarButton" layoutX="186.0" layoutY="348.0" mnemonicParsing="false" onMouseClicked="#doAction" prefHeight="25.0" prefWidth="298.0" text="Processar" />
             <TextField fx:id="pause" layoutX="186.0" layoutY="252.0" prefHeight="25.0" prefWidth="298.0" />
             <Label layoutX="121.0" layoutY="252.0" prefHeight="25.0" prefWidth="58.0" text="Pause:" />
 			<Label layoutX="121.0" layoutY="291.0" prefHeight="25.0" prefWidth="58.0" text="Type:" />
             <ChoiceBox fx:id="choice" layoutX="186.0" layoutY="291.0" prefHeight="25.0" prefWidth="298.0" value="Both" />
+            <Button id="fChooserButton" fx:id="dChooserButton2" layoutX="509.0" layoutY="199.0" mnemonicParsing="false" onAction="#fChooser" prefHeight="25.0" prefWidth="76.0" text="..." />
       </children>
     </AnchorPane>
   </children>
