@@ -112,9 +112,9 @@ public class InterfaceGraficaController implements Initializable {
     private Integer typeValidator(String st) {
         if (st.equalsIgnoreCase("Both")) {
             return 0;
-        } else if (st.equalsIgnoreCase("Basic")) {
+        } else if (st.equalsIgnoreCase("Linear Protocol")) {
             return 1;
-        } else if (st.equalsIgnoreCase("Fix")) {
+        } else if (st.equalsIgnoreCase("Microunits with Fixations")) {
             return 2;
         } else {
             return 0;
@@ -146,7 +146,7 @@ public class InterfaceGraficaController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        choice.setItems(FXCollections.observableArrayList("Both", "Basic", "Fix"));
+        choice.setItems(FXCollections.observableArrayList("Both", "Linear Protocol", "Microunits with Fixations"));
     }
 
 }

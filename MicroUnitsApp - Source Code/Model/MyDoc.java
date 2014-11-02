@@ -95,7 +95,7 @@ public class MyDoc {
 
         //fixation before the first Key
         stringList.add("\nFixation before the first Key: \n");
-        stringList.add(stfixation(TF));
+        stringList.add(stFixation(TF));
         stringList.add("\n\n");
         TI = TF;
 
@@ -121,7 +121,7 @@ public class MyDoc {
                 stringList.add(getKeys().get(i).getValue());
                 stringList.add("(" + TF + ")");
                 stringList.add("\n");
-                stringList.add(stfixation(TF));
+                stringList.add(stFixation(TF));
                 stringList.add("\n\n");
                 TI = TF;
                 aux = true;
@@ -147,12 +147,12 @@ public class MyDoc {
             stringList.add(getKeys().get(i).getValue());
             stringList.add("(" + TF + ")");
             stringList.add("\n");
-            stringList.add(stfixation(TF));
+            stringList.add(stFixation(TF));
             stringList.add("\n\n");
 
         } else {
             stringList.add(getKeys().get(i).getValue());
-            stringList.add("(" + TF + ")" + "\n" + stfixation(TF));
+            stringList.add("(" + TF + ")" + "\n" + stFixation(TF));
         }
 
         stringList.add("\n\n###Statistics###\n");
@@ -229,7 +229,7 @@ public class MyDoc {
     /*
      * fixation checks during the last segment break.
      */
-    private String stfixation(Integer TF) {
+    private String stFixation(Integer TF) {
         if (getIfix() >= getfixation().size()) {
             return "";
         }

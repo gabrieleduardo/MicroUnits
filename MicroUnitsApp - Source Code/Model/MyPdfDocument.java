@@ -38,9 +38,9 @@ public class MyPdfDocument {
     /*
      * PDF File Type
      */
-    private static final int both = 0;
-    private static final int basic = 1;
-    private static final int fix = 2;
+    private static final int BOTH = 0;
+    private static final int LINEARPROTOCOL = 1;
+    private static final int MICROUNITSWITHFIXATIONS = 2;
 
     /**
      * Create a pdf file
@@ -48,7 +48,7 @@ public class MyPdfDocument {
      * @param path - Directory to Parse
      * @param file - PDF File name
      * @param pause - Time between pauses
-     * @param type - 0 - Both, 1 - Basic, 2 - fixation
+     * @param type - 0 - Both, 1 - Linear Protocol, 2 - fixation
      * @throws java.lang.Exception - Exception
      */
     public static void create(String path, String file, Integer pause, Integer type) throws Exception {
@@ -62,14 +62,13 @@ public class MyPdfDocument {
             }
 
             switch (type) {
-                case both:
-                    createBasic(filename, path, file, pause);
-                    createfixation(filename, path, file, pause);
+                case BOTH:
+                    create(filename, path, file, pause);
                     break;
-                case basic:
-                    createBasic(filename, path, file, pause);
+                case LINEARPROTOCOL:
+                    createLinearProtocol(filename, path, file, pause);
                     break;
-                case fix:
+                case MICROUNITSWITHFIXATIONS:
                     createfixation(filename, path, file, pause);
                     break;
                 default:
@@ -79,19 +78,65 @@ public class MyPdfDocument {
             throw new Exception(ex.getMessage());
         }
     }
+    
+    private static void create(String[] filename, String path, String file, Integer pause) throws Exception {
+
+        ArrayList<ArrayList<String>> stList1 = new ArrayList<>(); // MicroUnits with Fixation
+        ArrayList<ArrayList<String>> stList2 = new ArrayList<>(); // Linear Protocol
+        String docName;
+
+        /*
+         * Gets all xml files in a directory and parses them
+         * Each file is writing in a different pdf file
+         */
+        for (String st : filename) {
+            if (st.endsWith(".xml")) {
+                MyDoc myDoc = getMyDoc(path, st);
+
+                // Clears the list to always have the title in first position
+                stList1.clear();
+
+                stList1.add(myDoc.pausefixationAnalysis(pause));
+
+                /*
+                 * Removes the file extensions and Concatenates the pdf title 
+                 * with xml file name,  the final name will be a concatenation 
+                 * of them plus ".pdf". Example: 
+                 *
+                 * file = "mypdf.pdf"
+                 * st = "Example12345.xml"
+                 * final = "mypdfExample12345.pdf"
+                 */
+                docName = removeExtensionsPdf(file) + removeExtensionsXml(st).toUpperCase() + ".pdf";
+                // Writes a pdf file - MicroUnits with PDF type.
+                stList1.get(0).set(0, removeExtensionsXml(st));
+                write(stList1, docName);
+                
+                // Temp is used to change file title
+                ArrayList<String> temp = myDoc.pauseAnalysis(pause);
+                temp.set(0, removeExtensionsXml(st));
+
+                stList2.add(temp);
+            }
+        }
+        
+        // Write the PDF - Linear Protocol Type
+        if (!stList2.isEmpty()) {
+            write(stList2, file);
+        }
+    }
 
     /**
-     * Create a basic pdf file with "Key" fields only
+     * Create a basic pdf file with Linear Protocol only
      */
-    private static void createBasic(String[] filename, String path, String file, Integer pause)
+    private static void createLinearProtocol(String[] filename, String path, String file, Integer pause)
             throws Exception {
         ArrayList<ArrayList<String>> stList = new ArrayList<>();
 
         // Gets all xml files in a directory and parses them
         for (String st : filename) {
             if (st.endsWith(".xml")) {
-                System.out.println("Parsing file: " + path + getSlash() + st);
-                MyDoc myDoc = AnotherParse.parseDocument(path + getSlash() + st);
+                MyDoc myDoc = getMyDoc(path, st);
 
                 // Temp is used to change file title
                 ArrayList<String> temp = myDoc.pauseAnalysis(pause);
@@ -108,7 +153,7 @@ public class MyPdfDocument {
     }
 
     /**
-     * Create a pdf file with "fixation" parsing
+     * Create a pdf file with fixation parsing
      */
     private static void createfixation(String[] filename, String path, String file, Integer pause) throws Exception {
 
@@ -121,8 +166,7 @@ public class MyPdfDocument {
          */
         for (String st : filename) {
             if (st.endsWith(".xml")) {
-                System.out.println("Parsing FIle: " + path + getSlash() + st);
-                MyDoc myDoc = AnotherParse.parseDocument(path + getSlash() + st);
+                MyDoc myDoc = getMyDoc(path, st);
 
                 // Clears the list to always have the title in first position
                 stList.clear();
@@ -144,7 +188,9 @@ public class MyPdfDocument {
                 write(stList, docName);
             }
         }
+        
     }
+    
     /*
      * Write the pdf file
      */
@@ -302,5 +348,10 @@ public class MyPdfDocument {
     private static String removeExtensionsXml(String st) {
         st = st.replaceAll(".xml", "");
         return st;
+    }
+    
+    private static MyDoc getMyDoc(String path,String st) throws Exception{
+        System.out.println("Parsing FIle: " + path + getSlash() + st);
+        return AnotherParse.parseDocument(path + getSlash() + st);
     }
 }

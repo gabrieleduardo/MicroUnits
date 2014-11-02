@@ -75,7 +75,7 @@ public class AnotherParse {
             //Parses each file line
             while (br.ready()) {
                 line = br.readLine();
-                if (line.contains("<fixation")) {
+                if (line.contains("<Fix")) {
                     myDoc.addfixation(parsefixation(line));
                 } else if (line.contains("<Key Time")) {
                     myDoc.addKey(parseKey(line));
