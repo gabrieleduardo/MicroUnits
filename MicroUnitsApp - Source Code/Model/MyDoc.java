@@ -28,13 +28,15 @@ public class MyDoc {
 
     private String path;
 
-    private ArrayList<Integer> fix;
+    private ArrayList<Fix> fixWin1;
+
+    private ArrayList<Fix> fixWin2;
 
     private ArrayList<Key> keys;
 
     private Integer finalTime;
 
-    private Integer ifix;
+    private Integer[] ifix;
 
     /**
      * Class constructor
@@ -43,19 +45,24 @@ public class MyDoc {
      */
     public MyDoc(String path) {
         this.path = path;
-        fix = new ArrayList<>();
+        fixWin1 = new ArrayList<>();
+        fixWin2 = new ArrayList<>();
         keys = new ArrayList<>();
         finalTime = 0;
-        ifix = 0;
+        ifix = new Integer[2];
+        for(int i = 0; i < ifix.length;i++){
+            ifix[i] = 0;
+        }
     }
 
     /**
-     * Add a fix field
+     * Add a fix object
      *
-     * @param i - fixation time
+     * @param fix - Fix Object
      */
-    public void addfixation(Integer i) {
-        getfixation().add(i);
+    public void addfixationWin(Fix fix) {
+        Integer i = fix.getWin();
+        getfixationWin(i).add(fix);
     }
 
     /**
@@ -68,17 +75,13 @@ public class MyDoc {
     }
 
     /**
-     * fixation Pause Analysis 
+     * fixation Pause Analysis
      *
      * @param pause - Time between pauses
      * @return ArrayList with the fix values
      * @throws java.lang.Exception - Exception
      */
     public ArrayList<String> pausefixationAnalysis(Integer pause) throws Exception {
-
-        if (getKeys() == null || getFinalTime() == null || getfixation() == null) {
-            return null;
-        }
 
         ArrayList<Integer> pausesVector = new ArrayList<>();
         ArrayList<Integer> charactersVector = new ArrayList<>();
@@ -88,14 +91,13 @@ public class MyDoc {
         Boolean aux = true;
         Integer dif;
         Integer chars = 0;
-        this.setIfix((Integer) 0);
-
+        resetIfix();
         stringList.add(getPath());
         TF = getKeys().get(0).getTime(); // First Key Time
 
         //fixation before the first Key
         stringList.add("\nFixation before the first Key: \n");
-        stringList.add(stFixation(TF));
+        stringList.addAll(stFixation(TF));
         stringList.add("\n\n");
         TI = TF;
 
@@ -109,7 +111,7 @@ public class MyDoc {
 
             // Calculates the time between the Keys N and N+1
             dif = getKeys().get(i + 1).getTime() - getKeys().get(i).getTime();
-            
+
             // Count the number of chars typed in the segment
             chars += charactersCount(getKeys().get(i).getValue());
 
@@ -121,7 +123,7 @@ public class MyDoc {
                 stringList.add(getKeys().get(i).getValue());
                 stringList.add("(" + TF + ")");
                 stringList.add("\n");
-                stringList.add(stFixation(TF));
+                stringList.addAll(stFixation(TF));
                 stringList.add("\n\n");
                 TI = TF;
                 aux = true;
@@ -147,7 +149,7 @@ public class MyDoc {
             stringList.add(getKeys().get(i).getValue());
             stringList.add("(" + TF + ")");
             stringList.add("\n");
-            stringList.add(stFixation(TF));
+            stringList.addAll(stFixation(TF));
             stringList.add("\n\n");
 
         } else {
@@ -164,7 +166,7 @@ public class MyDoc {
     }
 
     /**
-     * Key pauses analysis 
+     * Key pauses analysis
      *
      * @param pause - Time between pauses
      * @return ArrayLis with the pauses values
@@ -189,7 +191,7 @@ public class MyDoc {
         for (i = 0; i < getKeys().size() - 1; i++) {
             // Calculates the time between the Keys N and N+1
             dif = getKeys().get(i + 1).getTime() - getKeys().get(i).getTime();
-            
+
             // Count the number of chars typed in the segment
             chars += charactersCount(getKeys().get(i).getValue());
 
@@ -226,30 +228,38 @@ public class MyDoc {
         return stringList;
     }
 
+    private ArrayList<String> stFixation(Integer TF) {
+        ArrayList<String> retorno = new ArrayList<>();
+        for(int i = 1; i < 3;i++){
+            retorno.add(stFixation(TF,i));
+        }
+        
+        return retorno;
+    }
+
     /*
      * fixation checks during the last segment break.
      */
-    private String stFixation(Integer TF) {
-        if (getIfix() >= getfixation().size()) {
+    private String stFixation(Integer TF, Integer win) {
+        if (ifix[win-1] >= getfixationWin(win).size()) {
             return "";
         }
         Integer ac = 0;
         Integer sum = 0;
-        Integer decrement = getfixation().get(getIfix());
+        Integer decrement = getfixationWin(win).get(ifix[win-1]).getTime();
 
-        while (getIfix() < getfixation().size() && getfixation().get(getIfix()) <= TF) {
+        while (ifix[win-1] < getfixationWin(win).size() && getfixationWin(win).get(ifix[win-1]).getTime() <= TF) {
             ac++;
-            sum += getfixation().get(getIfix()) - decrement;
-            decrement = getfixation().get(getIfix());
-            setIfix((Integer) (getIfix() + 1));
-        }
-        
-        if(ac > 0){
-            return "Fixation Number: " + ac + " // Average Fixation Duration: " + (sum / ac) + " ms // Fixation Duration: " + sum;
-        }else{
-            return "There are no fixations in this segment ";
+            sum += getfixationWin(win).get(ifix[win-1]).getTime() - decrement;
+            decrement = getfixationWin(win).get(ifix[win-1]).getTime();
+            ifix[win-1]++;
         }
 
+        if (ac > 0) {
+            return "[Win="+win+"] Fixation Number: " + ac + " // Average Fixation Duration: " + (sum / ac) + " ms // Fixation Duration: " + sum+"\n";
+        } else {
+            return "[Win="+win+"] There are no fixations in this segment \n";
+        }
     }
 
     /*
@@ -326,17 +336,18 @@ public class MyDoc {
     }
 
     /**
+     * @param i - Win value
      * @return the fix
      */
-    public ArrayList<Integer> getfixation() {
-        return fix;
-    }
-
-    /**
-     * @param fix the fix to set
-     */
-    public void setfixation(ArrayList<Integer> fix) {
-        this.fix = fix;
+    public ArrayList<Fix> getfixationWin(Integer i) {
+        switch (i) {
+            case 1:
+                return fixWin1;
+            case 2:
+                return fixWin2;
+            default:
+                return null;
+        }
     }
 
     /**
@@ -367,17 +378,9 @@ public class MyDoc {
         this.finalTime = finalTime;
     }
 
-    /**
-     * @return the ifix
-     */
-    public Integer getIfix() {
-        return ifix;
-    }
-
-    /**
-     * @param ifix the ifix to set
-     */
-    public void setIfix(Integer ifix) {
-        this.ifix = ifix;
+    private void resetIfix() {
+        for(int i = 0; i < ifix.length;i++){
+            ifix[i] = 0;
+        }
     }
 }

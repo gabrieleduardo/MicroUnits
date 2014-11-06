@@ -76,7 +76,7 @@ public class AnotherParse {
             while (br.ready()) {
                 line = br.readLine();
                 if (line.contains("<Fix")) {
-                    myDoc.addfixation(parsefixation(line));
+                    myDoc.addfixationWin(parsefixation(line));
                 } else if (line.contains("<Key Time")) {
                     myDoc.addKey(parseKey(line));
                 } else if (line.contains("<System") && line.contains("STOP")) {
@@ -96,15 +96,18 @@ public class AnotherParse {
     }
 
     // Gets all the fixation fields
-    private static Integer parsefixation(String st) throws Exception {
+    private static Fix parsefixation(String st) throws Exception {
         org.w3c.dom.Document xmlDocument = loadXMLFromString(st);
 
         XPath xPath;
         xPath = XPathFactory.newInstance().newXPath();
 
         Node node = (Node) xPath.compile(expressionfixation).evaluate(xmlDocument, XPathConstants.NODE);
+        
+        Integer time = Integer.parseInt(node.getAttributes().getNamedItem("Time").getNodeValue());
+        Integer win = Integer.parseInt(node.getAttributes().getNamedItem("Win").getNodeValue());
 
-        return Integer.parseInt(node.getAttributes().getNamedItem("Time").getNodeValue());
+        return new Fix(time,win);
     }
 
     // Gets all the Key fields
