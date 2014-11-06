@@ -48,7 +48,7 @@ public class AnotherParse {
     /**
      * XPath expression to gets all the fixation fields
      */
-    private static final String expressionfixation = "//Fix";
+    private static final String expressionfixation = "//Fix[@Win='1' or @Win='2']";
 
     /**
      * XPath expression to gets the stop time

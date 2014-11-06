@@ -79,7 +79,8 @@ public class InterfaceGraficaController implements Initializable {
         if (dir.getText().length() > 1) {
 
             try {
-                MyPdfDocument.create(dir.getText(), filenameValidator(arq.getText()), pauseValidator(pause.getText()),
+                MyPdfDocument myPdfInstance = MyPdfDocument.getInstance();
+                myPdfInstance.create(dir.getText(), filenameValidator(arq.getText()), pauseValidator(pause.getText()),
                         typeValidator(choice.getValue()));
             } catch (Exception ex) {
                 Dialog dialog;

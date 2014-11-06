@@ -247,7 +247,7 @@ public class MyDoc {
         if(ac > 0){
             return "Fixation Number: " + ac + " // Average Fixation Duration: " + (sum / ac) + " ms // Fixation Duration: " + sum;
         }else{
-            return "There was no any fixation in this segment";
+            return "There are no fixations in this segment ";
         }
 
     }

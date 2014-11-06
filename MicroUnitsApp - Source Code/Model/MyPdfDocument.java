@@ -18,6 +18,7 @@
  */
 package Model;
 
+import Interface.MyDocument;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -33,14 +34,18 @@ import java.util.ArrayList;
 /**
  * @author Gabriel Ed. da Silva
  */
-public class MyPdfDocument {
-
-    /*
-     * PDF File Type
-     */
-    private static final int BOTH = 0;
-    private static final int LINEARPROTOCOL = 1;
-    private static final int MICROUNITSWITHFIXATIONS = 2;
+public class MyPdfDocument implements MyDocument {
+    
+    private MyPdfDocument() {
+    }
+    
+    public static MyPdfDocument getInstance() {
+        return MyPdfDocumentHolder.INSTANCE;
+    }
+    
+    private static class MyPdfDocumentHolder {
+        private static final MyPdfDocument INSTANCE = new MyPdfDocument();
+    }
 
     /**
      * Create a pdf file
@@ -51,7 +56,8 @@ public class MyPdfDocument {
      * @param type - 0 - Both, 1 - Linear Protocol, 2 - fixation
      * @throws java.lang.Exception - Exception
      */
-    public static void create(String path, String file, Integer pause, Integer type) throws Exception {
+    @Override
+    public void create(String path, String file, Integer pause, Integer type) throws Exception {
         try {
 
             File dir = new File(path);
@@ -78,8 +84,8 @@ public class MyPdfDocument {
             throw new Exception(ex.getMessage());
         }
     }
-    
-    private static void create(String[] filename, String path, String file, Integer pause) throws Exception {
+
+    private void create(String[] filename, String path, String file, Integer pause) throws Exception {
 
         ArrayList<ArrayList<String>> stList1 = new ArrayList<>(); // MicroUnits with Fixation
         ArrayList<ArrayList<String>> stList2 = new ArrayList<>(); // Linear Protocol
@@ -111,7 +117,7 @@ public class MyPdfDocument {
                 // Writes a pdf file - MicroUnits with PDF type.
                 stList1.get(0).set(0, removeExtensionsXml(st));
                 write(stList1, docName);
-                
+
                 // Temp is used to change file title
                 ArrayList<String> temp = myDoc.pauseAnalysis(pause);
                 temp.set(0, removeExtensionsXml(st));
@@ -119,7 +125,7 @@ public class MyPdfDocument {
                 stList2.add(temp);
             }
         }
-        
+
         // Write the PDF - Linear Protocol Type
         if (!stList2.isEmpty()) {
             write(stList2, file);
@@ -129,7 +135,7 @@ public class MyPdfDocument {
     /**
      * Create a basic pdf file with Linear Protocol only
      */
-    private static void createLinearProtocol(String[] filename, String path, String file, Integer pause)
+    private void createLinearProtocol(String[] filename, String path, String file, Integer pause)
             throws Exception {
         ArrayList<ArrayList<String>> stList = new ArrayList<>();
 
@@ -155,7 +161,7 @@ public class MyPdfDocument {
     /**
      * Create a pdf file with fixation parsing
      */
-    private static void createfixation(String[] filename, String path, String file, Integer pause) throws Exception {
+    private void createfixation(String[] filename, String path, String file, Integer pause) throws Exception {
 
         ArrayList<ArrayList<String>> stList = new ArrayList<>();
         String docName;
@@ -188,14 +194,13 @@ public class MyPdfDocument {
                 write(stList, docName);
             }
         }
-        
+
     }
-    
+
     /*
      * Write the pdf file
      */
-
-    private static void write(ArrayList<ArrayList<String>> stList, String filename) throws DocumentException, FileNotFoundException, UnsupportedEncodingException {
+    private void write(ArrayList<ArrayList<String>> stList, String filename) throws DocumentException, FileNotFoundException, UnsupportedEncodingException {
         Document document = null;
 
         try {
@@ -226,7 +231,7 @@ public class MyPdfDocument {
                     if (isWindows()) {
                         st = new String(st.getBytes(), "UTF8");
                     }
-                    
+
                     st = replace(st);
 
                     phrase = fontSelector.process(st);
@@ -255,7 +260,7 @@ public class MyPdfDocument {
      * Navigationdata = BLACK
      * Pause data = RED
      */
-    private static String getFontString(String st) {
+    private String getFontString(String st) {
 
         if (st.contentEquals("[Delete]") || st.contentEquals("[Back]") || st.contentEquals("[Ctrl+X]")) {
             return "GREEN";
@@ -275,7 +280,7 @@ public class MyPdfDocument {
     /*
      * Replace some characters to unicode symbols
      */
-    private static String replace(String st) {
+    private String replace(String st) {
 
         if (st.length() <= 8) {
             st = replaceSmall(st);
@@ -289,7 +294,7 @@ public class MyPdfDocument {
         return st;
     }
 
-    private static String replaceSmall(String st) {
+    private String replaceSmall(String st) {
         st = st.replaceAll("\\[Left\\]", "\u2190 ");
         st = st.replaceAll("\\[Up\\]", "\u2191 ");
         st = st.replaceAll("\\[Right\\]", "\u2192 ");
@@ -298,7 +303,7 @@ public class MyPdfDocument {
         return st;
     }
 
-    private static String replaceBig(String st) {
+    private String replaceBig(String st) {
         st = st.replaceAll("\\[Shift\\+Left\\]", "[Shift+\u2190] ");
         st = st.replaceAll("\\[Shift\\+Up\\]", "[Shift+\u2191] ");
         st = st.replaceAll("\\[Shift\\+Right\\]", "[Shift+\u2192] ");
@@ -318,7 +323,7 @@ public class MyPdfDocument {
     /*
      * Method addEmptyLine as seen in: http://www.vogella.com/tutorials/JavaPDF/article.html
      */
-    private static void addEmptyLine(Paragraph paragraph, int number) {
+    private void addEmptyLine(Paragraph paragraph, int number) {
         for (int i = 0; i < number; i++) {
             paragraph.add(new Paragraph(" "));
         }
@@ -327,7 +332,7 @@ public class MyPdfDocument {
     /*
      * Gets the proper slash to the operating system
      */
-    private static String getSlash() {
+    private String getSlash() {
         //Microsoft Windows
         if (System.getProperty("os.name").startsWith("Windows")) {
             return "\\";
@@ -336,21 +341,21 @@ public class MyPdfDocument {
         return "/";
     }
 
-    private static boolean isWindows() {
+    private boolean isWindows() {
         return System.getProperty("os.name").startsWith("Windows");
     }
 
-    private static String removeExtensionsPdf(String st) {
+    private String removeExtensionsPdf(String st) {
         st = st.replaceAll(".pdf", "");
         return st;
     }
 
-    private static String removeExtensionsXml(String st) {
+    private String removeExtensionsXml(String st) {
         st = st.replaceAll(".xml", "");
         return st;
     }
-    
-    private static MyDoc getMyDoc(String path,String st) throws Exception{
+
+    private MyDoc getMyDoc(String path, String st) throws Exception {
         System.out.println("Parsing FIle: " + path + getSlash() + st);
         return AnotherParse.parseDocument(path + getSlash() + st);
     }
