@@ -28,17 +28,24 @@ public class Key {
 
     /**
      * Class constructor
+     * Construtor de Classe
      *
-     * @param time - Time field
-     * @param value - Value field
+     * @param time  Time field
+     * @param value  Value field
      */
     public Key(Integer time, String value) {
         this.time = time;
-        this.value = value;
+
+        /**
+         * Little Trick to replace any white spaces values
+         * Pequeno truque para substituir todos os espaços em branco
+         */
+        this.value = StringTreatment.replaceWhiteSpaces(value);
     }
 
     /**
      * Gets the time field
+     * Recupera o campo tempo
      *
      * @return the time
      */
@@ -48,6 +55,7 @@ public class Key {
 
     /**
      * Sets the time field
+     * Atualiza o campo tempo
      *
      * @param time the time to set
      */
@@ -57,6 +65,7 @@ public class Key {
 
     /**
      * Gets the value field
+     * Recupera o campo valor
      *
      * @return the value
      */
@@ -66,11 +75,12 @@ public class Key {
 
     /**
      * Sets the value field
+     * Atualiza o campo valor
      *
      * @param value the value to set
      */
     public void setValue(String value) {
-        this.value = value;
+        this.value = StringTreatment.replaceWhiteSpaces(value);
     }
 
 }

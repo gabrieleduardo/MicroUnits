@@ -18,6 +18,7 @@
  */
 package Model;
 
+import static Model.StringTreatment.format2f;
 import java.util.ArrayList;
 
 /**
@@ -28,18 +29,23 @@ public class MyDoc {
 
     private String path;
 
-    private ArrayList<Fix> fixWin1;
+    private final ArrayList<Fix> fixWin1;
 
-    private ArrayList<Fix> fixWin2;
+    private final ArrayList<Fix> fixWin2;
+
+    private final ArrayList<Fix> fixList;
 
     private ArrayList<Key> keys;
 
     private Integer finalTime;
 
-    private Integer[] ifix;
+    private final Integer[] ifix;
+    
+    private Integer globalfix;
 
     /**
      * Class constructor
+     * Construtor de Classe
      *
      * @param path - File path
      */
@@ -47,39 +53,66 @@ public class MyDoc {
         this.path = path;
         fixWin1 = new ArrayList<>();
         fixWin2 = new ArrayList<>();
+        fixList = new ArrayList<>();
         keys = new ArrayList<>();
         finalTime = 0;
         ifix = new Integer[2];
-        for(int i = 0; i < ifix.length;i++){
+        for (int i = 0; i < ifix.length; i++) {
             ifix[i] = 0;
         }
+        globalfix = 0;
     }
 
     /**
-     * Add a fix object
+     * Add a fix object into Fixation Windows List
+     * Adiciona um objeto fix na lista de fixação de janelas
      *
-     * @param fix - Fix Object
+     * @param fix Fix Object
      */
     public void addfixationWin(Fix fix) {
         Integer i = fix.getWin();
         getfixationWin(i).add(fix);
     }
+    
+    /**
+     * Add a fix object into fixation list
+     * Adiciona um objeto fix na lista de fixações
+     *
+     * @param fix Fix Object
+     */
+    
+    public void addFixList(Fix fix){
+        fixList.add(fix);
+    }
+    
+    /**
+     *  Get a fix in fixList
+     *  Recupera uma fixação da lista
+     * 
+     * @param i Index
+     * @return Fix
+     */
+    public Fix getfixList(Integer i){
+        return fixList.get(i);
+    }
 
     /**
-     * Add a key field
+     * Add a Key Object into Key List
+     * Adiciona um objeto Key na lista de Keys.
      *
-     * @param key - Key Object
+     * @param key Key Object
      */
     public void addKey(Key key) {
         getKeys().add(key);
     }
 
     /**
-     * fixation Pause Analysis
+     * Fixation Pause Analysis
+     * Analisador de Pausas para Fixação
      *
-     * @param pause - Time between pauses
+     * @param pause Time between pauses
      * @return ArrayList with the fix values
-     * @throws java.lang.Exception - Exception
+     * @throws java.lang.Exception Exception
      */
     public ArrayList<String> pausefixationAnalysis(Integer pause) throws Exception {
 
@@ -95,7 +128,10 @@ public class MyDoc {
         stringList.add(getPath());
         TF = getKeys().get(0).getTime(); // First Key Time
 
-        //fixation before the first Key
+        /**
+         * Fixations before the first Key
+         * Fixações antes do primeiro uso de tecla
+         */
         stringList.add("\nFixation before the first Key: \n");
         stringList.addAll(stFixation(TF));
         stringList.add("\n\n");
@@ -103,16 +139,25 @@ public class MyDoc {
 
         for (int i = 0; i < getKeys().size() - 1; i++) {
 
-            // Add the start time of a segment
+            /**
+             * Add the start time of a segment
+             * Adiciona um tempo de inicio ao segmento
+             */
             if (aux) {
                 stringList.add("(" + TI + ")");
                 aux = false;
             }
 
-            // Calculates the time between the Keys N and N+1
+            /**
+             * Calculates the time between the Keys N and N+1
+             * Calcula o tempo entre as teclas N e N+1.
+             */
             dif = getKeys().get(i + 1).getTime() - getKeys().get(i).getTime();
 
-            // Count the number of chars typed in the segment
+            /**
+             * Count the number of chars typed in the segment
+             * Conta o número de caracteres acionados no segmento
+             */
             chars += charactersCount(getKeys().get(i).getValue());
 
             if (dif >= pause) {
@@ -132,9 +177,12 @@ public class MyDoc {
             }
         }
 
-        /*
+        /**
          * Checks the last element and calculates the difference between 
          * your time and the stop time
+         * 
+         * Verifica o último elemento e calcula a diferença entre seu tempo e o
+         * tempo de término.
          */
         TI = TF;
         TF = getFinalTime();
@@ -159,7 +207,7 @@ public class MyDoc {
 
         stringList.add("\n\n###Statistics###\n");
         stringList.add(statisticString(pausesVector, getFinalTime(), pause));
-        stringList.add(statisticStringCharsChars(charactersVector, pause));
+        stringList.add(statisticStringChars(charactersVector, pause));
         stringList.add("\n#########################\n\n");
 
         return stringList;
@@ -167,8 +215,9 @@ public class MyDoc {
 
     /**
      * Key pauses analysis
+     * Análise de teclas de pausa
      *
-     * @param pause - Time between pauses
+     * @param pause Time between pauses
      * @return ArrayLis with the pauses values
      * @throws java.lang.Exception - Exception
      */
@@ -189,10 +238,18 @@ public class MyDoc {
         int i;
 
         for (i = 0; i < getKeys().size() - 1; i++) {
-            // Calculates the time between the Keys N and N+1
+            
+            /**
+             * Calculates the time between the Keys N and N+1
+             * Calcula a diferença entre as Keys n e N+1
+             */
             dif = getKeys().get(i + 1).getTime() - getKeys().get(i).getTime();
 
-            // Count the number of chars typed in the segment
+            
+            /**
+             * Count the number of chars typed in the segment
+             * Conta a quantidade de caracteres digitados em cada segmentos
+             */
             chars += charactersCount(getKeys().get(i).getValue());
 
             if (dif >= pause) {
@@ -206,9 +263,12 @@ public class MyDoc {
             }
         }
 
-        /*
+        /**
          * Checks the last element and calculates the difference between 
          * your time and the stop time
+         * 
+         * Verifica o último elemento e calcula a diferença entre seu tempo e 
+         * o tempo final.
          */
         dif = getFinalTime() - getKeys().get(i).getTime();
         chars += charactersCount(getKeys().get(i).getValue());
@@ -222,49 +282,96 @@ public class MyDoc {
         }
         stringList.add("\n###Statistics###\n");
         stringList.add(statisticString(pausesVector, getFinalTime(), pause));
-        stringList.add(statisticStringCharsChars(charactersVector, pause));
+        stringList.add(statisticStringChars(charactersVector, pause));
         stringList.add("\n#########################");
 
         return stringList;
     }
 
+    /**
+     * Fixation checks for Win = 1 and Win = 2
+     * Verifica as fixações para Win = 1 e Win = 2
+     */
     private ArrayList<String> stFixation(Integer TF) {
+        
         ArrayList<String> retorno = new ArrayList<>();
-        for(int i = 1; i < 3;i++){
-            retorno.add(stFixation(TF,i));
+        for (int i = 1; i < 3; i++) {
+            retorno.add(stFixation(TF, i));
         }
         
+        retorno.add(transitionsCounts(TF));
+
         return retorno;
     }
 
-    /*
-     * fixation checks during the last segment break.
+    /**
+     * Fixation checks during the last segment break
+     * Verificação de fixação durante o ultimo segmento.
      */
     private String stFixation(Integer TF, Integer win) {
-        if (ifix[win-1] >= getfixationWin(win).size()) {
+        if (ifix[win - 1] >= getfixationWin(win).size()) {
             return "";
         }
+
+        Integer aux = win - 1;
         Integer ac = 0;
         Integer sum = 0;
-        Integer decrement = getfixationWin(win).get(ifix[win-1]).getTime();
+        Integer decrement = getfixationWin(win).get(ifix[aux]).getTime();
 
-        while (ifix[win-1] < getfixationWin(win).size() && getfixationWin(win).get(ifix[win-1]).getTime() <= TF) {
+        while (ifix[aux] < getfixationWin(win).size() && getfixationWin(win).get(ifix[aux]).getTime() <= TF) {
             ac++;
-            sum += getfixationWin(win).get(ifix[win-1]).getTime() - decrement;
-            decrement = getfixationWin(win).get(ifix[win-1]).getTime();
-            ifix[win-1]++;
+            sum += getfixationWin(win).get(ifix[aux]).getTime() - decrement;
+            decrement = getfixationWin(win).get(ifix[aux]).getTime();
+            ifix[aux]++;
         }
 
         if (ac > 0) {
-            return "[Win="+win+"] Fixation Number: " + ac + " // Average Fixation Duration: " + (sum / ac) + " ms // Fixation Duration: " + sum+"\n";
+            return "[Win=" + win + "] Fixation Number: " + ac + " // Average Fixation Duration: " + (sum / ac) + " ms // Fixation Duration: " + sum + "\n";
         } else {
-            return "[Win="+win+"] There are no fixations in this segment \n";
+            return "[Win=" + win + "] There are no fixations in this segment \n";
         }
     }
+    
+    /**
+     * Calculates the transitions between Windows
+     * Calcula o número de transições entre as janelas
+     * 
+     * @param TF Segment End time
+     * @return The number os transitions
+     */
+    private String transitionsCounts(Integer TF){
+        if (globalfix >= fixList.size()) {
+            return "";
+        }
+        
+        Integer transitions = 0;
+        Boolean aux = false;
+        
+        if(globalfix - 1 >= 0){
+            aux = true;
+        }
 
-    /*
+        
+        while (globalfix < fixList.size() && fixList.get(globalfix).getTime() <= TF) {
+            if(aux && fixList.get(globalfix-1) != fixList.get(globalfix)){
+                transitions++;
+            }
+            
+            globalfix++;
+        }
+        
+        return "Total transitions between windows: "+transitions+"\n";
+    }
+
+    /**
      * Counts the number of characters in a string. 
      * If it be a commando will be counted like 1.
+     * 
+     * Conta o número de caracteres presentes em uma string.
+     * Caso seja um comando é considerado como um caractere.
+     * 
+     * @param st String
+     * @return Number os chars of the String
      */
     private static Integer charactersCount(String st) {
         if (st == null) {
@@ -275,19 +382,23 @@ public class MyDoc {
             return st.length();
         }
     }
-
-    /*
+    
+    /**
      * Calculates the average, standard deviation, min and max characters between pauses.
-     * Returns a string with the data.
+     * Calcula a média, desvio padrão, min e máximo de caracteres entre pausas.
+     * 
+     * @param v Integer ArrayList with the numbers os characters
+     * @param pause Pause value
+     * @return String with the data
      */
-    private static String statisticStringCharsChars(ArrayList<Integer> v, Integer pause) {
+    private static String statisticStringChars(ArrayList<Integer> v, Integer pause) {
         Statistic statistic = new Statistic<>();
         Double average = statistic.average(v);
         Double standardDeviation = statistic.standardDeviation(v, average);
         Double max = statistic.max(v);
         Double min = statistic.min(v);
 
-        String returnValue = "\nAverage of characters between pauses longer than or equal to " + pause + ": " + format2f(average) + "\n"
+        String returnValue = "\nAverage number of characters between pauses longer than or equal to " + pause + ": " + format2f(average) + "\n"
                 + "Standard deviation of characters between pauses longer than or equal to " + pause + ": " + format2f(standardDeviation) + "\n"
                 + "Min Standard deviation of characters between pauses longer than or equal to " + pause + ": " + format2f(min) + "\n"
                 + "Max Standard deviation of characters between pauses longer than or equal to " + pause + ": " + format2f(max) + "\n";
@@ -295,10 +406,14 @@ public class MyDoc {
         return returnValue;
 
     }
-
-    /*
-     * Calculates the average, standard deviation, min and max characters between pauses.
-     * Returns a string with the data.
+    
+    /**
+     * Calculates the average, standard deviation, min and max values between pauses.
+     * Calcula a média, desvio padrão, min e max valores entre pausas
+     * @param v ArrayList with the values
+     * @param finalTime Stop time
+     * @param pause Pause Value
+     * @return String with the data
      */
     private static String statisticString(ArrayList<Integer> v, Integer finalTime, Integer pause) {
         Statistic statistic = new Statistic<>();
@@ -306,9 +421,10 @@ public class MyDoc {
         Double standardDeviation = statistic.standardDeviation(v, average);
         Double max = statistic.max(v);
         Double min = statistic.min(v);
+        
 
         String returnValue = "Task duration: " + finalTime + " \n" + ""
-                + "Average of pauses longer than or equal to " + pause + ": " + format2f(average) + "\n"
+                + "Average duration of pauses longer than or equal to " + pause + ": " + format2f(average) + "\n"
                 + "Standard Deviation of pauses longer than or equal to " + pause + ": " + format2f(standardDeviation) + "\n"
                 + "Min value of pauses longer than or equal to " + pause + ": " + format2f(min) + "\n"
                 + "Max value of pauses longer than or equal to " + pause + ": " + format2f(max) + "\n";
@@ -317,11 +433,10 @@ public class MyDoc {
 
     }
 
-    private static String format2f(Number n) {
-        return String.format("%.2f", n);
-    }
-
     /**
+     * Get the Path
+     * Recupera o caminho
+     * 
      * @return the path
      */
     public String getPath() {
@@ -329,6 +444,9 @@ public class MyDoc {
     }
 
     /**
+     * Set the path
+     * Atualiza o caminho
+     * 
      * @param path the path to set
      */
     public void setPath(String path) {
@@ -336,6 +454,8 @@ public class MyDoc {
     }
 
     /**
+     * Gets the selected fixation window list
+     * Recupera a lista das fixações na janela desejada
      * @param i - Win value
      * @return the fix
      */
@@ -351,6 +471,9 @@ public class MyDoc {
     }
 
     /**
+     * Gets the Key List
+     * Recupera uma lista de Key
+     * 
      * @return the keys
      */
     public ArrayList<Key> getKeys() {
@@ -358,13 +481,18 @@ public class MyDoc {
     }
 
     /**
+     * Set the Key List
+     * Atualiza a lista de Key
+     * 
      * @param keys the keys to set
      */
-    public void setKeys(ArrayList<Key> keys) {
+    private void setKeys(ArrayList<Key> keys) {
         this.keys = keys;
     }
 
     /**
+     * Gets the final time
+     * Recupera o tempo final
      * @return the finalTime
      */
     public Integer getFinalTime() {
@@ -372,14 +500,21 @@ public class MyDoc {
     }
 
     /**
+     * Set the final time
+     * Atualiza o tempo final
+     * 
      * @param finalTime the finalTime to set
      */
     public void setFinalTime(Integer finalTime) {
         this.finalTime = finalTime;
     }
 
+    /**
+     * Resets the ifix field
+     * Reseta o campo iFix
+     */
     private void resetIfix() {
-        for(int i = 0; i < ifix.length;i++){
+        for (int i = 0; i < ifix.length; i++) {
             ifix[i] = 0;
         }
     }

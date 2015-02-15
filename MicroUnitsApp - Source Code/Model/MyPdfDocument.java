@@ -18,7 +18,10 @@
  */
 package Model;
 
-import Interface.MyDocument;
+import static Model.StringTreatment.getFontString;
+import static Model.StringTreatment.removeExtensionsPdf;
+import static Model.StringTreatment.removeExtensionsXml;
+import static Model.StringTreatment.replace;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -34,11 +37,20 @@ import java.util.ArrayList;
 /**
  * @author Gabriel Ed. da Silva
  */
-public class MyPdfDocument implements MyDocument {
+public class MyPdfDocument{
+    
+    private static final int BOTH = 0;
+    private static final int LINEARPROTOCOL = 1;
+    private static final int MICROUNITSWITHFIXATIONS = 2;
     
     private MyPdfDocument() {
     }
     
+    /**
+     * Gets a object instance for MyPdfDocument
+     * Recupera uma instância de objeto do MyPdfDocument
+     * @return Instance
+     */
     public static MyPdfDocument getInstance() {
         return MyPdfDocumentHolder.INSTANCE;
     }
@@ -49,14 +61,14 @@ public class MyPdfDocument implements MyDocument {
 
     /**
      * Create a pdf file
+     * Cria um arquivo pdf
      *
-     * @param path - Directory to Parse
-     * @param file - PDF File name
-     * @param pause - Time between pauses
-     * @param type - 0 - Both, 1 - Linear Protocol, 2 - fixation
-     * @throws java.lang.Exception - Exception
+     * @param path Directory to Parse
+     * @param file PDF File name
+     * @param pause Time between pauses
+     * @param type 0 - Both, 1 - Linear Protocol, 2 - fixation
+     * @throws java.lang.Exception Exception
      */
-    @Override
     public void create(String path, String file, Integer pause, Integer type) throws Exception {
         try {
 
@@ -91,34 +103,53 @@ public class MyPdfDocument implements MyDocument {
         ArrayList<ArrayList<String>> stList2 = new ArrayList<>(); // Linear Protocol
         String docName;
 
-        /*
+        /**
          * Gets all xml files in a directory and parses them
-         * Each file is writing in a different pdf file
+         * each file is writing in a different pdf file
+         * 
+         * Recupera todos os arquivos xml de um diretório e os processa, em
+         * seguida cada arquivo é escrito em arquivo pdf diferente
          */
         for (String st : filename) {
             if (st.endsWith(".xml")) {
                 MyDoc myDoc = getMyDoc(path, st);
 
-                // Clears the list to always have the title in first position
+                /**
+                 * Clears the list to always have the title in first position 
+                 * Limpa a lista para sempre ter o título na primeira posição
+                 */
                 stList1.clear();
 
                 stList1.add(myDoc.pausefixationAnalysis(pause));
 
-                /*
+                /**
                  * Removes the file extensions and Concatenates the pdf title 
                  * with xml file name,  the final name will be a concatenation 
-                 * of them plus ".pdf". Example: 
+                 * of them plus ".pdf". 
+                 * 
+                 * Remove a extenção do arquivo e concatena o título do arquivo
+                 * pdf ao título do arquivo xml, o nome final será a concatenação
+                 * deles acrescido de ".pdf"
+                 * 
+                 * Example / Exemplo : 
                  *
                  * file = "mypdf.pdf"
                  * st = "Example12345.xml"
                  * final = "mypdfExample12345.pdf"
                  */
                 docName = removeExtensionsPdf(file) + removeExtensionsXml(st).toUpperCase() + ".pdf";
-                // Writes a pdf file - MicroUnits with PDF type.
+                /**
+                 * Writes a pdf file - MicroUnits with PDF type.
+                 * Escreve um arquivo PDF - Tipo PDF com MicroUnits. 
+                 */
                 stList1.get(0).set(0, removeExtensionsXml(st));
                 write(stList1, docName);
 
-                // Temp is used to change file title
+                
+                /**
+                 * Temp is used to change file title
+                 * A tempo é utilizada para modificar o título do documento
+                 */
                 ArrayList<String> temp = myDoc.pauseAnalysis(pause);
                 temp.set(0, removeExtensionsXml(st));
 
@@ -126,25 +157,35 @@ public class MyPdfDocument implements MyDocument {
             }
         }
 
-        // Write the PDF - Linear Protocol Type
+        /**
+         * Write the PDF - Linear Protocol Type
+         * Escreve o arquivo PDF - tipo protocolo linear
+         */
         if (!stList2.isEmpty()) {
-            write(stList2, file);
+            write(stList2, file+".pdf");
         }
     }
 
     /**
      * Create a basic pdf file with Linear Protocol only
+     * Cria um arquivo pdf básico com apenas o protocolo linear
      */
     private void createLinearProtocol(String[] filename, String path, String file, Integer pause)
             throws Exception {
         ArrayList<ArrayList<String>> stList = new ArrayList<>();
 
-        // Gets all xml files in a directory and parses them
+        /**
+         * Gets all xml files in a directory and parses them
+         * Recupera todos os arquivos xml em um diretório e os processa
+         */
         for (String st : filename) {
             if (st.endsWith(".xml")) {
                 MyDoc myDoc = getMyDoc(path, st);
 
-                // Temp is used to change file title
+                /**
+                 * Temp is used to change file title
+                 * A tempo é utilizada para modificar o título do documento
+                 */
                 ArrayList<String> temp = myDoc.pauseAnalysis(pause);
                 temp.set(0, removeExtensionsXml(st));
 
@@ -152,44 +193,64 @@ public class MyPdfDocument implements MyDocument {
             }
         }
 
-        // Write the PDF
+        /**
+         * Write the PDF
+         * Escreve o arquivo PDF
+         */
         if (!stList.isEmpty()) {
-            write(stList, file);
+            write(stList, file+".pdf");
         }
     }
 
     /**
      * Create a pdf file with fixation parsing
+     * Cria um arquivo pdf com processamento de fixações
      */
     private void createfixation(String[] filename, String path, String file, Integer pause) throws Exception {
 
         ArrayList<ArrayList<String>> stList = new ArrayList<>();
         String docName;
 
-        /*
+        /**
          * Gets all xml files in a directory and parses them
-         * Each file is writing in a different pdf file
+         * each file is writing in a different pdf file
+         * 
+         * Recupera todos os arquivos xml de um diretório e os processa, em
+         * seguida cada arquivo é escrito em arquivo pdf diferente
          */
         for (String st : filename) {
             if (st.endsWith(".xml")) {
                 MyDoc myDoc = getMyDoc(path, st);
 
-                // Clears the list to always have the title in first position
+                /**
+                 * Clears the list to always have the title in first position
+                 * Limpa a lista para sempre ter o títula na primeira posição
+                 */
                 stList.clear();
 
                 stList.add(myDoc.pausefixationAnalysis(pause));
 
-                /*
+                /**
                  * Removes the file extensions and Concatenates the pdf title 
                  * with xml file name,  the final name will be a concatenation 
-                 * of them plus ".pdf". Example: 
+                 * of them plus ".pdf". 
+                 * 
+                 * Remove a extenção do arquivo e concatena o título do arquivo
+                 * pdf ao título do arquivo xml, o nome final será a concatenação
+                 * deles acrescido de ".pdf"
+                 * 
+                 * Example / Exemplo : 
                  *
                  * file = "mypdf.pdf"
                  * st = "Example12345.xml"
                  * final = "mypdfExample12345.pdf"
                  */
                 docName = removeExtensionsPdf(file) + removeExtensionsXml(st).toUpperCase() + ".pdf";
-                // Writes a pdf file
+                
+                /**
+                 * Writes a pdf file
+                 * Escreve o arquivo pdf.
+                 */
                 stList.get(0).set(0, removeExtensionsXml(st));
                 write(stList, docName);
             }
@@ -197,8 +258,9 @@ public class MyPdfDocument implements MyDocument {
 
     }
 
-    /*
+    /**
      * Write the pdf file
+     * Escreve o arquivo pdf
      */
     private void write(ArrayList<ArrayList<String>> stList, String filename) throws DocumentException, FileNotFoundException, UnsupportedEncodingException {
         Document document = null;
@@ -224,9 +286,12 @@ public class MyPdfDocument implements MyDocument {
                 for (String st : stL) {
                     fontSelector = myFontSelector.getFontSelector(getFontString(st));
 
-                    /*
+                    /**
                      * In Windows we have some problems with Latin characters
-                     * and we need to forces the encoding to UFT8.
+                     * and we need to forces the encoding to UFT8
+                     * 
+                     * No Windows tivemos alguns problemas com caracteres latinos
+                     * e foi necessário forçar a codificação para UTF8
                      */
                     if (isWindows()) {
                         st = new String(st.getBytes(), "UTF8");
@@ -253,74 +318,9 @@ public class MyPdfDocument implements MyDocument {
         }
     }
 
-    /*
-     * Gets the font color name
-     * Production data = BLUE
-     * Elimination data = GREEN
-     * Navigationdata = BLACK
-     * Pause data = RED
-     */
-    private String getFontString(String st) {
-
-        if (st.contentEquals("[Delete]") || st.contentEquals("[Back]") || st.contentEquals("[Ctrl+X]")) {
-            return "GREEN";
-        }
-
-        if (st.endsWith("Up]") || st.endsWith("Down]") || st.endsWith("Left]") || st.endsWith("Right]")) {
-            return "BLACK";
-        }
-
-        if (st.startsWith("(")) {
-            return "RED";
-        }
-
-        return "BLUE";
-    }
-
-    /*
-     * Replace some characters to unicode symbols
-     */
-    private String replace(String st) {
-
-        if (st.length() <= 8) {
-            st = replaceSmall(st);
-        } else if (st.length() >= 9 && st.length() <= 17) {
-            st = replaceBig(st);
-        } else {
-            st = replaceSmall(st);
-            st = replaceBig(st);
-        }
-
-        return st;
-    }
-
-    private String replaceSmall(String st) {
-        st = st.replaceAll("\\[Left\\]", "\u2190 ");
-        st = st.replaceAll("\\[Up\\]", "\u2191 ");
-        st = st.replaceAll("\\[Right\\]", "\u2192 ");
-        st = st.replaceAll("\\[Down\\]", "\u2193 ");
-
-        return st;
-    }
-
-    private String replaceBig(String st) {
-        st = st.replaceAll("\\[Shift\\+Left\\]", "[Shift+\u2190] ");
-        st = st.replaceAll("\\[Shift\\+Up\\]", "[Shift+\u2191] ");
-        st = st.replaceAll("\\[Shift\\+Right\\]", "[Shift+\u2192] ");
-        st = st.replaceAll("\\[Shift\\+Down\\]", "[Shift+\u2193] ");
-        st = st.replaceAll("\\[Ctrl\\+Left\\]", "[Ctrl+\u2190] ");
-        st = st.replaceAll("\\[Ctrl\\+Up\\]", "[Ctrl+\u2191] ");
-        st = st.replaceAll("\\[Ctrl\\+Right\\]", "[Ctrl+\u2192] ");
-        st = st.replaceAll("\\[Ctrl\\+Down\\]", "[Ctrl+\u2193] ");
-        st = st.replaceAll("\\[Ctrl\\+Shift\\+Left\\]", "[Ctrl+Shift+\u2190] ");
-        st = st.replaceAll("\\[Ctrl\\+Shift\\+Up\\]", "[Ctrl+Shift+\u2191] ");
-        st = st.replaceAll("\\[Ctrl\\+Shift\\+Right\\]", "[Ctrl+Shift+\u2192] ");
-        st = st.replaceAll("\\[Ctrl\\+Shift\\+Down\\]", "[Ctrl+Shift+\u2193] ");
-
-        return st;
-    }
-
-    /*
+    /**
+     * Add a empty line
+     * Adiciona uma linha em branco
      * Method addEmptyLine as seen in: http://www.vogella.com/tutorials/JavaPDF/article.html
      */
     private void addEmptyLine(Paragraph paragraph, int number) {
@@ -329,34 +329,27 @@ public class MyPdfDocument implements MyDocument {
         }
     }
 
-    /*
-     * Gets the proper slash to the operating system
+    /**
+     * Checks if the OS is Windows
+     * Verifica se o sistema operacional é Windows
+     * @return True if is running in Windows
      */
-    private String getSlash() {
-        //Microsoft Windows
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            return "\\";
-        }
-        //Linux and MacOs
-        return "/";
-    }
-
     private boolean isWindows() {
         return System.getProperty("os.name").startsWith("Windows");
     }
 
-    private String removeExtensionsPdf(String st) {
-        st = st.replaceAll(".pdf", "");
-        return st;
-    }
 
-    private String removeExtensionsXml(String st) {
-        st = st.replaceAll(".xml", "");
-        return st;
-    }
-
+    /**
+     * Imprime o nome do arquivo a ser processado e realiza o processamento
+     * Prints the file name to be parsed and do the parse
+     * 
+     * @param path File path
+     * @param st File name
+     * @return MyDoc Object
+     * @throws Exception Error
+     */
     private MyDoc getMyDoc(String path, String st) throws Exception {
-        System.out.println("Parsing FIle: " + path + getSlash() + st);
-        return AnotherParse.parseDocument(path + getSlash() + st);
+        System.out.println("Parsing File: " + path + StringTreatment.getSlash() + st);
+        return AnotherParse.parseDocument(path + StringTreatment.getSlash() + st);
     }
 }

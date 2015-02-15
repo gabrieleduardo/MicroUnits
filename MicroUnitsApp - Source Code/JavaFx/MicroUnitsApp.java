@@ -34,10 +34,16 @@ import javafx.stage.Stage;
 public class MicroUnitsApp extends Application {
     
     /**
+     * Para utilização do Controlador
      * For Controller use.
      */
     public static Stage stage;
 
+    /**
+     * Método Start
+     * Start method
+     * @param stage
+     */
     @Override
     public void start(Stage stage) {
         
@@ -59,6 +65,7 @@ public class MicroUnitsApp extends Application {
     }
 
     /**
+     * Main
      * @param args the command line arguments
      */
     public static void main(String[] args) {

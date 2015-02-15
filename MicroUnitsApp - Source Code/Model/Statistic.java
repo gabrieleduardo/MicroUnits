@@ -24,14 +24,15 @@ import java.util.ArrayList;
 /**
  *
  * @author Gabriel Ed
- * @param <T> - Numeric class
+ * @param <T>  Numeric class
  */
 public class Statistic<T extends Number> {
 
     /**
      *  Average
+     *  Média Aritmética
      *
-     * @param list - Number ArrayList
+     * @param list Number ArrayList
      * @return Double value with the Average
      */
     public Double average(ArrayList<T> list) {
@@ -49,9 +50,10 @@ public class Statistic<T extends Number> {
 
     /**
      * Standard Deviation
+     * Desvio Padrão
      *
-     * @param list - Numeric ArrayList
-     * @param average - Standard Deviation
+     * @param list Numeric ArrayList
+     * @param average Average
      * @return Double value with the standard deviation
      */
     public Double standardDeviation(ArrayList<T> list, T average) {
@@ -70,9 +72,10 @@ public class Statistic<T extends Number> {
 
     /**
      * Max value
+     * Valor Máximo
      *
-     * @param list - Numeric ArrayList
-     * @return Double - Max value
+     * @param list Numeric ArrayList
+     * @return The Max value
      */
     public Double max(ArrayList<T> list) {
         if (list.isEmpty()) {
@@ -91,9 +94,10 @@ public class Statistic<T extends Number> {
 
     /**
      * Min value
+     * Valor Mínimo
      *
-     * @param list - Numeric ArrayList
-     * @return Double - Min Value
+     * @param list Numeric ArrayList
+     * @return Min Value
      */
     public Double min(ArrayList<T> list) {
         if (list.isEmpty()) {

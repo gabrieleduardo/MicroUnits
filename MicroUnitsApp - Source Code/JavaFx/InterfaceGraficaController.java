@@ -63,7 +63,6 @@ public class InterfaceGraficaController implements Initializable {
     private void fChooser(ActionEvent event) {
         FileChooser fc = new FileChooser();
         fc.setTitle("Save as");
-        fc.setSelectedExtensionFilter(null);
         fc.setInitialDirectory(
                 new File(System.getProperty("user.home"))
         );
@@ -134,17 +133,19 @@ public class InterfaceGraficaController implements Initializable {
     }
     
 
-    /*
+    /**
      * Gets the proper slash to the operating system
+     * Recupera a barra própria para o sistema operacional
      */
     private String getSlash() {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            return "\\";
-        }
-
-        return "/";
+        return File.separator;
     }
 
+    /**
+     * Initialize Method
+     * @param url
+     * @param rb
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         choice.setItems(FXCollections.observableArrayList("Both", "Linear Protocol", "Microunits with Fixations"));

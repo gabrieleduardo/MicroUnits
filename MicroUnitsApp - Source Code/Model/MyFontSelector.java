@@ -36,7 +36,11 @@ import java.util.Map;
 public class MyFontSelector {
 
     private final Map<String, FontSelector> fontSelectors;
-
+    
+    /**
+     * MyFontSelector Constructor
+     * Construtor da Classe MyFontSelector
+     */
     private MyFontSelector() {
         this.fontSelectors = new HashMap<>();
         initBaseFonts();
@@ -44,23 +48,29 @@ public class MyFontSelector {
 
     /**
      * Gets the FontSelector with the type choosed
+     * Recupera o seletor de fonte para o tipo escolhido
      *
-     * @param st - The font type
+     * @param st The font type
      * @return FontSelector Object
      */
     public FontSelector getFontSelector(String st) {
         return this.fontSelectors.get(st);
     }
 
-    /*
+    /**
      * Inits the BaseFonts of External Fonts and gets of the internals
+     * Faz a inicialização das BaseFonts das fontes externas e recupera das
+     * fontes internas.
      */
     private void initBaseFonts() {
         try {
             ArrayList<BaseFont> baseFontList = new ArrayList<>();
             ArrayList<Font> fontList = new ArrayList<>();
 
-            // Gets Internals BaseFonts
+            /**
+             * Gets Internals BaseFonts
+             * Recupera as BaseFonts das fontes internas
+             */ 
             fontList.add(FontFactory.getFont(BaseFont.TIMES_ROMAN));
             fontList.add(FontFactory.getFont(BaseFont.COURIER));
             fontList.add(FontFactory.getFont(BaseFont.SYMBOL));
@@ -69,11 +79,18 @@ public class MyFontSelector {
                 baseFontList.add(f.getBaseFont());
             }
             
-            //Gets external chinese traditional BaseFonts
+            /**
+             * Gets external chinese traditional BaseFonts
+             * Recupera as BaseFonts da fonte externa do Chinês tradicional
+             */
+
             baseFontList.add(BaseFont.createFont("MHei-Medium", "UniCNS-UCS2-H", BaseFont.EMBEDDED));
             baseFontList.add(BaseFont.createFont("MSung-Light", "UniCNS-UCS2-H", BaseFont.EMBEDDED));
             
-            //Gets external chinese simplified BaseFonts
+            /**
+             * Gets external chinese simplified BaseFonts
+             * Recupera o BaseFont da fonte externa do Chinês simplificado
+             */
             baseFontList.add(BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.EMBEDDED));
             
 
@@ -83,6 +100,11 @@ public class MyFontSelector {
         }
     }
 
+    /**
+     * Inicializa as fontes
+     * Initialize the fonts
+     * @param baseFontList A List with the BaseFonts
+     */
     private void initFonts(ArrayList<BaseFont> baseFontList) {
         FontSelector fontSelectorTitle = new FontSelector();
         FontSelector fontSelectorBlue = new FontSelector();
@@ -113,6 +135,7 @@ public class MyFontSelector {
 
     /**
      * Gets a instance
+     * Recupera uma instância
      *
      * @return MyFontSelector Instance
      */
@@ -120,6 +143,10 @@ public class MyFontSelector {
         return MyFontSelectorHolder.INSTANCE;
     }
 
+    /**
+     * Singleton initiator class
+     * Classe responsável pela instânciação do Singleton.
+     */
     private static class MyFontSelectorHolder {
 
         private static final MyFontSelector INSTANCE = new MyFontSelector();
